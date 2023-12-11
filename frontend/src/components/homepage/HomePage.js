@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react'
 import AuthContext from '../../context/AuthContext'
 
-const API_URL = 'http://localhost:8000/api/';
+const API_URL = 'http://localhost:8000/api';
 
 const HomePage = () => {
     let [mainPageData, setMainPageData] = useState({})
@@ -9,7 +9,7 @@ const HomePage = () => {
 
     useEffect(()=> {
         getMainPageData()
-    })
+    }, [])
 
 
     let getMainPageData = async() =>{
@@ -24,8 +24,6 @@ const HomePage = () => {
 
         if(response.status === 200){
             setMainPageData(data)
-        }else if(response.statusText === 'Unauthorized'){
-            logoutUser()
         }
 
     }

@@ -1,86 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { Button, Checkbox, Form } from 'semantic-ui-react'
 
-const BankAccountPage = ({ match, history }) => {
-
-    let noteId = match.params.id
-    let [note, setNote] = useState(null)
-
-    useEffect(() => {
-        getNote()
-    }, [noteId])
-
-
-    let getNote = async () => {
-        if (noteId === 'new') return
-
-        let response = await fetch(`/api/notes/${noteId}/`)
-        let data = await response.json()
-        setNote(data)
-    }
-
-    let createNote = async () => {
-        fetch(`/api/notes/`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(note)
-        })
-    }
-
-
-    let updateNote = async () => {
-        fetch(`/api/notes/${noteId}/`, {
-            method: "PUT",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(note)
-        })
-    }
-
-
-    let deleteNote = async () => {
-        fetch(`/api/notes/${noteId}/`, {
-            method: 'DELETE',
-            'headers': {
-                'Content-Type': 'application/json'
-            }
-        })
-        history.push('/')
-    }
-
-    let handleSubmit = () => {
-        console.log('NOTE:', note)
-        if (noteId !== 'new' && note.body == '') {
-            deleteNote()
-        } else if (noteId !== 'new') {
-            updateNote()
-        } else if (noteId === 'new' && note.body !== null) {
-            createNote()
-        }
-        history.push('/')
-    }
-
-    let handleChange = (value) => {
-        setNote(note => ({ ...note, 'body': value }))
-        console.log('Handle Change:', note)
-    }
-
+export default function Create() {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [checkbox, setCheckbox] = useState(false);
     return (
-        <div className="note" >
-            <div className="note-header">
-                {noteId !== 'new' ? (
-                    <button onClick={deleteNote}>Delete</button>
-                ) : (
-                    <button onClick={handleSubmit}>Done</button>
-                )}
-
-            </div>
-            <textarea onChange={(e) => { handleChange(e.target.value) }} value={note?.body}></textarea>
+        <div>
+            <Form className="create-form">
+                <Form.Field>
+                    <label>First Name</label>
+                    <input placeholder='First Name' onChange={(e) => setFirstName(e.target.value)}/>
+                </Form.Field>
+                <Form.Field>
+                    <label>Last Name</label>
+                    <input placeholder='Last Name' onChange={(e) => setLastName(e.target.value)}/>
+                </Form.Field>
+                <Button type='submit'>Submit</Button>
+            </Form>
         </div>
     )
 }
-
-export default BankAccountPage

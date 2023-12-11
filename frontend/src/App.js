@@ -5,15 +5,25 @@ import HomePage from './components/homepage/HomePage'
 import Header from './components/Header'
 import { jwtDecode } from "jwt-decode";
 
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import PrivateRoute from './utils/PrivateRoute'
+import LoginPage from './components/reg&auth/LoginPage'
+import RegistrationPage from './components/reg&auth/RegistrationPage'
+import BankAccountsPage from './components/bank-account/BankAccountsPage'
+import CacheInvoicesPage from './components/cache-invoice/CacheInvoicesPage'
+import OperationsPage from './components/operation/OperationsPage'
+import PersonalPage from './components/user-profile/PersonalPage'
+import FinancialGoalsPage from './components/financial-goal/FinancialGoalsPage'
+import RegularSpendsPage from './components/regular-spending/RegularSpendsPage'
+
 
 function App() {
   let [authTokens, setAuthTokens] = useState(()=> localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
   let [user, setUser] = useState(()=> localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null)
-  let [loading, setLoading] = useState(true)
 
   let loginUser = async (e)=> {
       e.preventDefault()
-       fetch(process.env.REACT_APP_API_KEY, {
+       fetch('http://localhost:8000/api/token/', {
           method:'POST',
           headers:{
               'Content-Type':'application/json'
@@ -60,28 +70,23 @@ function App() {
       }else{
           logoutUser()
       }
-      if(loading){
-          setLoading(false)
-      }
+
       }).catch((err) => console.log(err))
   }
 
   useEffect(()=> {
+    if (!authTokens) {
 
-      if(loading){
-          updateToken()
-      }
+        let fourMinutes = 1000 * 60 * 4
 
-      let fourMinutes = 1000 * 60 * 4
-
-      let interval =  setInterval(()=> {
-          if(authTokens){
-              updateToken()
-          }
-      }, fourMinutes)
-      return ()=> clearInterval(interval)
-
-  }, [authTokens, loading])
+        let interval =  setInterval(()=> {
+            if(authTokens){
+                updateToken()
+            }
+        }, fourMinutes)
+        return ()=> clearInterval(interval)
+    }
+  }, [authTokens, updateToken])
   let contextData = {
     user:user,
     authTokens:authTokens,
@@ -90,10 +95,24 @@ function App() {
 }
   return (
     <div className="App">
+
     <AuthProvider.Provider value={contextData}>
+       <BrowserRouter>
        <Header/>
+             <Routes>
+                 <Route element={<PrivateRoute><HomePage /></PrivateRoute>}path="/home"exact/>
+                 <Route element={<PrivateRoute><PersonalPage /></PrivateRoute>} path="/personal" exact/>
+                 <Route element={<PrivateRoute><BankAccountsPage /></PrivateRoute>} path="/bank-accounts" exact/>
+                 <Route element={<PrivateRoute><CacheInvoicesPage /></PrivateRoute>} path="/cache-invoices" exact/>
+                 <Route element={<PrivateRoute><OperationsPage /></PrivateRoute>} path="/operations" exact/>
+                 <Route element={<PrivateRoute><FinancialGoalsPage /></PrivateRoute>} path="/financial-goals" exact/>
+                 <Route element={<PrivateRoute><RegularSpendsPage /></PrivateRoute>} path="/regular-spends" exact/>
+                 <Route element={<LoginPage />} path="/login"/>
+                 <Route element={<RegistrationPage />} path="/register"/>
+             </Routes>
+        </BrowserRouter>
     </AuthProvider.Provider>
-    <HomePage/>
+
     </div>
   );
 }

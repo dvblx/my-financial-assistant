@@ -1,0 +1,44 @@
+import React, {useState, useEffect, useContext} from 'react'
+import AuthContext from '../../context/AuthContext'
+
+const API_URL = 'http://localhost:8000/api/';
+
+const HomePage = () => {
+    let [mainPageData, setMainPageData] = useState({})
+    let {authTokens, logoutUser} = useContext(AuthContext)
+
+    useEffect(()=> {
+        getMainPageData()
+    })
+
+
+    let getMainPageData = async() =>{
+        let response = await fetch(`${API_URL}`, {
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer ' + String(authTokens.access)
+            }
+        })
+        let data = await response.json()
+
+        if(response.status === 200){
+            setMainPageData(data)
+        }else if(response.statusText === 'Unauthorized'){
+            logoutUser()
+        }
+
+    }
+
+    return (
+        <div>
+            <p>Главная страница</p>
+            <p>{mainPageData.current_user_bank_products}</p>
+            <p>{mainPageData.current_user_financial_goals}</p>
+            <p>{mainPageData.current_user_cash_invoices}</p>
+            <p>{mainPageData.current_user_regular_spends}</p>
+        </div>
+    )
+}
+
+export default HomePage

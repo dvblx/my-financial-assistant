@@ -1,6 +1,6 @@
 import axios from 'axios';
-const API_URL = 'http://localhost:8000/api';
-const GOAL_API_URL = API_URL+'/financial-goal/';
+const API_URL = 'http://localhost:8000/api/';
+const GOAL_API_URL = API_URL+'financial-goal/';
 
 export default class FinancialGoalService{
 

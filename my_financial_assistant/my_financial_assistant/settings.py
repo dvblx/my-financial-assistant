@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django.contrib.postgres',
+    "corsheaders",
 
     # Project apps
     'bank_api_imitation',
@@ -64,10 +65,9 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-
-CORS_ORIGIN_WHITELIST = (
+CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
-)
+]
 
 ROOT_URLCONF = 'my_financial_assistant.urls'
 

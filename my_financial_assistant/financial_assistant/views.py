@@ -33,7 +33,8 @@ class OperationsView(APIView):
                               FinancialAssistantBankAccount.objects.filter(user=request.user)]
         user_bank_products = BankProduct.objects.filter(bank_account__in=user_bank_accounts)
         user_operations = Operation.objects.filter(
-            Q(sender__in=user_bank_products) | Q(recipient__in=user_bank_products))
+            Q(sender__in=user_bank_products) | Q(recipient__in=user_bank_products)).order_by('-operation_date_time')
+
         filtered_operations = filter_operations(request, user_operations)
         serializer = OperationSerializer(filtered_operations, many=True)
         return Response(serializer.data, status=200)

@@ -33,7 +33,7 @@ def get_main_page_content(current_user: User):
         'current_user_bank_products': current_user_bank_products,
         'current_user_financial_goals': current_user_financial_goals,
         'current_user_cash_invoices': current_user_cash_invoices,
-        'current_user_regular_spendings': current_user_regular_spends
+        'current_user_regular_spends': current_user_regular_spends
     }
     return response
 

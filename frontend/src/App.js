@@ -7,12 +7,12 @@ import { jwtDecode } from "jwt-decode";
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import PrivateRoute from './utils/PrivateRoute'
-import LoginPage from './components/reg&auth/LoginPage'
-import RegistrationPage from './components/reg&auth/RegistrationPage'
+import LoginPage from './components/personal/LoginPage'
+import RegistrationPage from './components/personal/RegistrationPage'
 import BankAccountsPage from './components/bank-account/BankAccountsPage'
-import CacheInvoicesPage from './components/cache-invoice/CacheInvoicesPage'
+import GetCacheInvoices from './components/cache-invoice/CacheInvoicesPage'
 import OperationsPage from './components/operation/OperationsPage'
-import PersonalPage from './components/user-profile/PersonalPage'
+import PersonalPage from './components/personal/PersonalPage'
 import FinancialGoalsPage from './components/financial-goal/FinancialGoalsPage'
 import RegularSpendsPage from './components/regular-spending/RegularSpendsPage'
 
@@ -103,7 +103,7 @@ function App() {
                  <Route element={<PrivateRoute><HomePage /></PrivateRoute>}path="/home"exact/>
                  <Route element={<PrivateRoute><PersonalPage /></PrivateRoute>} path="/personal" exact/>
                  <Route element={<PrivateRoute><BankAccountsPage /></PrivateRoute>} path="/bank-accounts" exact/>
-                 <Route element={<PrivateRoute><CacheInvoicesPage /></PrivateRoute>} path="/cache-invoices" exact/>
+                 <Route element={<PrivateRoute><GetCacheInvoices /></PrivateRoute>} path="/cache-invoices" exact/>
                  <Route element={<PrivateRoute><OperationsPage /></PrivateRoute>} path="/operations" exact/>
                  <Route element={<PrivateRoute><FinancialGoalsPage /></PrivateRoute>} path="/financial-goals" exact/>
                  <Route element={<PrivateRoute><RegularSpendsPage /></PrivateRoute>} path="/regular-spends" exact/>

@@ -34,6 +34,7 @@ class BaseInvoice(models.Model):
     POPULAR_CURRENCIES = [
         (RUSSIAN_ROUBLE, "Российский рубль"),
         (BELARUSIAN_ROUBLE, "Белорусский рубль"),
+        (TENGE, "Тенге"),
         (DOLLAR, "Доллар"),
         (EURO, "Евро"),
         (YUAN, "Юань"),

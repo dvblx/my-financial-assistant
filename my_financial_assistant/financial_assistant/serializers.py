@@ -9,7 +9,7 @@ from .models import *
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username', 'first_name', 'last_name', 'email', 'password']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -43,6 +43,13 @@ class FinancialGoalSerializer(ModelSerializer):
         return get_user_money(obj.user) * (obj.put_aside_percent/100)
 
 
+class FinancialGoalSerializerCreateUpdate(ModelSerializer):
+
+    class Meta:
+        model = FinancialGoal
+        fields = '__all__'
+
+
 class CashInvoiceSerializer(ModelSerializer):
     user = UserSerializer()
 
@@ -51,8 +58,22 @@ class CashInvoiceSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class CashInvoiceSerializerCreateUpdate(ModelSerializer):
+
+    class Meta:
+        model = CashInvoice
+        fields = '__all__'
+
+
 class RegularSpendingSerializer(ModelSerializer):
     user = UserSerializer()
+
+    class Meta:
+        model = RegularSpending
+        fields = '__all__'
+
+
+class RegularSpendingSerializerCreateUpdate(ModelSerializer):
 
     class Meta:
         model = RegularSpending

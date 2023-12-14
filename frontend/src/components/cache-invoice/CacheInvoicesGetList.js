@@ -1,13 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Button, Checkbox, Form, Table } from 'semantic-ui-react'
 import AuthContext from '../../context/AuthContext'
 
-const API_URL = 'http://localhost:8000/api/operation/';
+const API_URL = 'http://localhost:8000/api/cash-invoice/';
 
-export default function GetList() {
+const GetCacheInvoices = () => {
     let {authTokens, logoutUser} = useContext(AuthContext)
-    const [bankAccountData, setBankAccountData] = useState([]);
-    let getMainPageData = async() =>{
+    const [cacheInvoiceData, setCacheInvoiceData] = useState([]);
+    let getCacheInvoices = async() =>{
         let response = await fetch(`${API_URL}`, {
             method:'GET',
             headers:{
@@ -18,24 +18,24 @@ export default function GetList() {
         let data = await response.json()
 
         if(response.status === 200){
-            setBankAccountData(data)
+            setCacheInvoiceData(data)
         }
     return (
         <div>
             <Table singleLine>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>First Name</Table.HeaderCell>
                         <Table.HeaderCell>Last Name</Table.HeaderCell>
                         <Table.HeaderCell>Checked</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
 
                 <Table.Body>
-                    {bankAccountData.map((bankAccount) => {
+                    {cacheInvoiceData.map((cacheInvoice) => {
                        return (
                          <Table.Row>
-                            <Table.Cell>{bankAccount.bank.bank}</Table.Cell>
+                            <Table.Cell>{cacheInvoice.amount}</Table.Cell>
+                            <Table.Cell>{cacheInvoice.currency}</Table.Cell>
                           </Table.Row>
                      )})}
                 </Table.Body>
@@ -45,3 +45,4 @@ export default function GetList() {
 }
 }
 
+export default GetCacheInvoices

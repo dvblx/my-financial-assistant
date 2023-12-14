@@ -1,11 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Button, Checkbox, Form, Table } from 'semantic-ui-react'
-import AuthContext from '../../context/AuthContext'
 
-const API_URL = 'http://localhost:8000/api/operation/';
+const API_URL = 'http://localhost:8000/api/bank-account/';
 
 export default function GetList() {
-    let {authTokens, logoutUser} = useContext(AuthContext)
     const [bankAccountData, setBankAccountData] = useState([]);
     let getMainPageData = async() =>{
         let response = await fetch(`${API_URL}`, {
@@ -43,5 +41,3 @@ export default function GetList() {
         </div>
     )
 }
-}
-

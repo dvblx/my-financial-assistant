@@ -52,6 +52,14 @@ INSTALLED_APPS = [
     'financial_assistant',
 ]
 
+DEFAULT_FROM_EMAIL = getenv('EMAIL_HOST_USER')
+SERVER_EMAIL = getenv('EMAIL_HOST_USER')
+EMAIL_USE_TLS = True
+EMAIL_HOST = getenv('EMAIL_HOST')
+EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = getenv('EMAIL_PORT')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -165,7 +173,7 @@ CELERY_BROKER_URL = environ.get("CELERY_BROKER", f"{getenv('CELERY_BROKER_URL')}
 CELERY_RESULT_BACKEND = environ.get("CELERY_BROKER", f"{getenv('CELERY_BROKER_URL')}/0")
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,

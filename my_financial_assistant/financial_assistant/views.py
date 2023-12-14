@@ -21,12 +21,16 @@ from .serializers import *
 
 class MainPageView(APIView):
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         current_user = request.user
         return Response(get_main_page_content(current_user), status=200)
 
 
 class OperationsView(APIView):
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user_bank_accounts = [account.bank for account in
@@ -43,14 +47,14 @@ class OperationsView(APIView):
 class PersonalDataViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    #permission_classes = [ProfileOwnerPermission]
+    permission_classes = [ProfileOwnerPermission]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         with transaction.atomic():
             profile = self.perform_create(serializer)
-            UserEmailConfirm.objects.create(user=profile)
+            UserEmailConfirm.objects.create(user=profile, email_confirmed=True)
             CashInvoice.objects.create(user=profile, currency="RUB")
         return Response(serializer.data, status=201)
 
@@ -110,6 +114,14 @@ class FinancialGoalViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin,
     serializer_class = FinancialGoalSerializer
     #permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['user'] = request.user.id
+        serializer = FinancialGoalSerializerCreateUpdate(data=data)
+        serializer.is_valid(raise_exception=True)
+        financial_goal = serializer.save()
+        return Response(FinancialGoalSerializer(financial_goal).data, status=201)
+
     def list(self, request, *args, **kwargs):
         queryset = self.queryset.filter(user=request.user)
         serializer = self.get_serializer(queryset, many=True)
@@ -124,12 +136,13 @@ class FinancialGoalViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin,
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        convert_to = request.data.pop('convert_to')
-        if convert_to:
+        data = request.data
+        convert_to = request.data.get('currency')
+        if instance.currency != convert_to:
             new_amount = convert_currency(instance.amount, instance.currency, convert_to)
-            serializer.amount = new_amount
-            serializer.currency = convert_to
+            data['amount'] = new_amount
+            data['currency'] = convert_to
+        serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
@@ -141,6 +154,15 @@ class CashInvoiceViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin, U
     serializer_class = CashInvoiceSerializer
     #permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['user'] = request.user.id
+        serializer = CashInvoiceSerializerCreateUpdate(data=data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            financial_goal = serializer.save()
+        return Response(CashInvoiceSerializer(financial_goal).data, status=201)
+
     def list(self, request, *args, **kwargs):
         queryset = self.queryset.filter(user=request.user)
         serializer = self.get_serializer(queryset, many=True)
@@ -149,14 +171,16 @@ class CashInvoiceViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin, U
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        convert_to = request.data.pop('convert_to')
-        if convert_to:
+        data = request.data
+        convert_to = request.data.get('currency')
+        if instance.currency != convert_to:
             new_amount = convert_currency(instance.amount, instance.currency, convert_to)
-            serializer.amount = new_amount
-            serializer.currency = convert_to
+            data['amount'] = new_amount
+            data['currency'] = convert_to
+        serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        with transaction.atomic():
+            self.perform_update(serializer)
         return Response(serializer.data)
 
 
@@ -166,6 +190,15 @@ class RegularSpendingViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixi
     serializer_class = RegularSpendingSerializer
     #permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['user'] = request.user.id
+        serializer = RegularSpendingSerializerCreateUpdate(data=data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            regular_spending = serializer.save()
+        return Response(RegularSpendingSerializer(regular_spending).data, status=201)
+
     def list(self, request, *args, **kwargs):
         queryset = self.queryset.filter(user=request.user)
         serializer = self.get_serializer(queryset, many=True)
@@ -174,12 +207,13 @@ class RegularSpendingViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixi
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        convert_to = request.data.pop('convert_to')
-        if convert_to:
+        data = request.data
+        convert_to = request.data.get('currency')
+        if instance.currency != convert_to:
             new_amount = convert_currency(instance.amount, instance.currency, convert_to)
-            serializer.amount = new_amount
-            serializer.currency = convert_to
+            data['amount'] = new_amount
+            data['currency'] = convert_to
+        serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)

@@ -15,106 +15,108 @@ import OperationsPage from './components/operation/OperationsPage'
 import PersonalPage from './components/personal/PersonalPage'
 import FinancialGoalsPage from './components/financial-goal/FinancialGoalsPage'
 import RegularSpendsPage from './components/regular-spending/RegularSpendsPage'
+import CacheInvoice from './components/cache-invoice/CacheInvoice';
 
 
-function App() {
-  let [authTokens, setAuthTokens] = useState(()=> localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
-  let [user, setUser] = useState(()=> localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null)
+const App = () => {
+   let [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
+   let [user, setUser] = useState(() => localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null)
 
-  let loginUser = async (e)=> {
+   let loginUser = async (e) => {
       e.preventDefault()
-       fetch('http://localhost:8000/api/token/', {
-          method:'POST',
-          headers:{
-              'Content-Type':'application/json'
-          },
-          body:JSON.stringify({'username':e.target.username.value, 'password':e.target.password.value})
+      fetch('http://localhost:8000/api/token/', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ 'username': e.target.username.value, 'password': e.target.password.value })
       }).then((response) => {
-        if(response.status === 200){
-          response.json().then((data) => {
-            setAuthTokens(data)
-            setUser(jwtDecode(data.access))
-            localStorage.setItem('authTokens', JSON.stringify(data))
-            window.location.pathname = '/'
-          })
-      }else{
-          alert('Something went wrong!')
-      }
+         if (response.status === 200) {
+            response.json().then((data) => {
+               setAuthTokens(data)
+               setUser(jwtDecode(data.access))
+               localStorage.setItem('authTokens', JSON.stringify(data))
+               window.location.pathname = '/'
+            })
+         } else {
+            alert('Something went wrong!')
+         }
       }).catch((error) => console.log(error))
-  }
+   }
 
 
-  let logoutUser = () => {
+   let logoutUser = () => {
       setAuthTokens(null)
       setUser(null)
       localStorage.removeItem('authTokens')
       window.location.pathname = '/login'
-  }
+   }
 
 
-  let updateToken = async ()=> {
+   let updateToken = async () => {
 
       fetch(`${process.env.REACT_APP_API_KEY}refresh/`, {
-          method:'POST',
-          headers:{
-              'Content-Type':'application/json'
-          },
-          body:JSON.stringify({'refresh':authTokens?.refresh})
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ 'refresh': authTokens?.refresh })
       }).then((response) => {
-        if (response.status === 200){
-          response.json().then((data) => {
-            setAuthTokens(data)
-            setUser(jwtDecode(data.access))
-            localStorage.setItem('authTokens', JSON.stringify(data))
-          })
-      }else{
-          logoutUser()
-      }
+         if (response.status === 200) {
+            response.json().then((data) => {
+               setAuthTokens(data)
+               setUser(jwtDecode(data.access))
+               localStorage.setItem('authTokens', JSON.stringify(data))
+            })
+         } else {
+            logoutUser()
+         }
 
       }).catch((err) => console.log(err))
-  }
+   }
 
-  useEffect(()=> {
-    if (!authTokens) {
+   useEffect(() => {
+      if (!authTokens) {
 
-        let fourMinutes = 1000 * 60 * 4
+         let fourMinutes = 1000 * 60 * 4
 
-        let interval =  setInterval(()=> {
-            if(authTokens){
-                updateToken()
+         let interval = setInterval(() => {
+            if (authTokens) {
+               updateToken()
             }
-        }, fourMinutes)
-        return ()=> clearInterval(interval)
-    }
-  }, [authTokens, updateToken])
-  let contextData = {
-    user:user,
-    authTokens:authTokens,
-    loginUser:loginUser,
-    logoutUser:logoutUser,
-}
-  return (
-    <div className="App">
+         }, fourMinutes)
+         return () => clearInterval(interval)
+      }
+   }, [authTokens, updateToken])
 
-    <AuthProvider.Provider value={contextData}>
-       <BrowserRouter>
-       <Header/>
-             <Routes>
-                 <Route element={<PrivateRoute><HomePage /></PrivateRoute>}path="/home"exact/>
-                 <Route element={<PrivateRoute><PersonalPage /></PrivateRoute>} path="/personal" exact/>
-                 <Route element={<PrivateRoute><BankAccountsPage /></PrivateRoute>} path="/bank-accounts" exact/>
-                 <Route element={<PrivateRoute><GetCacheInvoices /></PrivateRoute>} path="/cache-invoices" exact/>
-                 <Route element={<PrivateRoute><OperationsPage /></PrivateRoute>} path="/operations" exact/>
-                 <Route element={<PrivateRoute><FinancialGoalsPage /></PrivateRoute>} path="/financial-goals" exact/>
-                 <Route element={<PrivateRoute><RegularSpendsPage /></PrivateRoute>} path="/regular-spends" exact/>
-                 <Route element={<LoginPage />} path="/login"/>
-                 <Route element={<RegistrationPage />} path="/register"/>
-             </Routes>
-        </BrowserRouter>
-    </AuthProvider.Provider>
+   let contextData = {
+      user: user,
+      authTokens: authTokens,
+      loginUser: loginUser,
+      logoutUser: logoutUser,
+   }
+   return (
+      <div className="App">
 
-    </div>
-  );
+         <AuthProvider.Provider value={contextData}>
+            <BrowserRouter>
+               <Header />
+               <Routes>
+                  <Route element={<PrivateRoute><HomePage /></PrivateRoute>} path="/" exact />
+                  <Route element={<PrivateRoute><PersonalPage /></PrivateRoute>} path="/personal" exact />
+                  <Route element={<PrivateRoute><BankAccountsPage /></PrivateRoute>} path="/bank-accounts" exact />
+                  <Route element={<PrivateRoute><CacheInvoice /></PrivateRoute>} path="/cache-invoices" exact />
+                  <Route element={<PrivateRoute><OperationsPage /></PrivateRoute>} path="/operations" exact />
+                  <Route element={<PrivateRoute><FinancialGoalsPage /></PrivateRoute>} path="/financial-goals" exact />
+                  <Route element={<PrivateRoute><RegularSpendsPage /></PrivateRoute>} path="/regular-spends" exact />
+                  <Route element={<LoginPage />} path="/login" />
+                  <Route element={<RegistrationPage />} path="/register" />
+               </Routes>
+            </BrowserRouter>
+         </AuthProvider.Provider>
+
+      </div>
+   );
 }
 
 export default App;

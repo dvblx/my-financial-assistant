@@ -66,7 +66,7 @@ class PersonalDataViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
         serializer = self.get_serializer(current_user)
         response = serializer.data
         current_user_bank_accounts = FinancialAssistantBankAccount.objects.filter(user=current_user)
-        current_user_bank_accounts_serializer = FinancialAssistantBankAccountSerializer(current_user_bank_accounts,
+        current_user_bank_accounts_serializer = FinancialAssistantBankAccountSerializerForList(current_user_bank_accounts,
                                                                                         many=True)
         response['money'] = get_user_money(current_user)
         response['bank_accounts'] = current_user_bank_accounts_serializer.data
@@ -177,7 +177,8 @@ class CashInvoiceViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin, U
             new_amount = convert_currency(instance.amount, instance.currency, convert_to)
             data['amount'] = new_amount
             data['currency'] = convert_to
-        serializer = self.get_serializer(instance, data=data, partial=partial)
+        data['user'] = request.user.pk
+        serializer = CashInvoiceSerializerCreateUpdate(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
         with transaction.atomic():
             self.perform_update(serializer)

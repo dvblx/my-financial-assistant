@@ -1,4 +1,4 @@
-from os import environ, getenv
+from os import environ
 
 from celery import Celery
 from django.conf import settings

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
-from bank_api_imitation.serializers import BankSerializer
+from bank_api_imitation.serializers import BankSerializer, BankAccountSerializer
 from .models import *
 
 
@@ -23,7 +23,15 @@ class UserEmailConfirmSerializer(ModelSerializer):
 
 class FinancialAssistantBankAccountSerializer(ModelSerializer):
     user = UserSerializer()
-    bank = BankSerializer()
+    bank = BankAccountSerializer()
+
+    class Meta:
+        model = FinancialAssistantBankAccount
+        fields = '__all__'
+
+
+class FinancialAssistantBankAccountSerializerForList(ModelSerializer):
+    bank = BankAccountSerializer()
 
     class Meta:
         model = FinancialAssistantBankAccount

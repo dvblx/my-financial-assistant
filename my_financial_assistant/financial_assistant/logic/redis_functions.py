@@ -15,7 +15,7 @@ def get_main_page_content(current_user: User):
         bank_products_count_from_cache = cache.get(f'user_{current_user.pk}_bank_{bank_account.pk}_products')
         current_user_bank_products.append(
             bank_products_count_from_cache if bank_products_count_from_cache else BankProduct.objects.filter(
-                bank_account=bank_account).count())
+                bank_account=bank_account.bank).count())
     current_user_bank_products = sum(current_user_bank_products)
     current_user_financial_goals = cache.get(f'{current_user.pk}_financial_goals')
     if not current_user_financial_goals:

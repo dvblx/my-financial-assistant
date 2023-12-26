@@ -15,3 +15,4 @@ def recipient_permission(request, recipient_id):
             return
         return Response({'error': 'access denied'}, status=401)
     return Response({'error': 'unauthorized'}, status=403)
+

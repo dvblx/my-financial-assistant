@@ -6,7 +6,7 @@ from .views import PersonalDataViewSet, BankAccountViewSet, FinancialGoalViewSet
 
 urlpatterns = [
     path('', MainPageView.as_view()),
-    re_path(r'operation/{0,1}$', OperationsView.as_view()),
+    re_path(r'/operation/{0,1}$', OperationsView.as_view()),
 ]
 
 router = SimpleRouter()

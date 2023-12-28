@@ -33,15 +33,19 @@ class OperationsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        user = request.user
         user_bank_accounts = [account.bank for account in
-                              FinancialAssistantBankAccount.objects.filter(user=request.user)]
+                              FinancialAssistantBankAccount.objects.filter(user=user)]
         user_bank_products = BankProduct.objects.filter(bank_account__in=user_bank_accounts)
         user_operations = Operation.objects.filter(
             Q(sender__in=user_bank_products) | Q(recipient__in=user_bank_products)).order_by('-operation_date_time')
 
         filtered_operations = filter_operations(request, user_operations)
         serializer = OperationSerializer(filtered_operations, many=True)
-        return Response(serializer.data, status=200)
+        response = serializer.data
+        for operation in response:
+            operation['profit'] = operation['recipient'] == user.pk
+        return Response(response, status=200)
 
 
 class PersonalDataViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):

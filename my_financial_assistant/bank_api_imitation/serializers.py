@@ -27,8 +27,6 @@ class BankProductSerializer(serializers.ModelSerializer):
 
 
 class OperationSerializer(serializers.ModelSerializer):
-    spender = BankProductSerializer()
-    recipient = BankProductSerializer()
 
     class Meta:
         model = Operation

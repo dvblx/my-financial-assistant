@@ -31,10 +31,10 @@ const HomePage = () => {
     return (
         <div>
             <p>Главная страница</p>
-            <p>{mainPageData.current_user_bank_products}</p>
-            <p>{mainPageData.current_user_financial_goals}</p>
-            <p>{mainPageData.current_user_cash_invoices}</p>
-            <p>{mainPageData.current_user_regular_spends}</p>
+            <p>Зарегистрированные продукты банков: {mainPageData.current_user_bank_products}</p>
+            <p>Финансовые цели: {mainPageData.current_user_financial_goals}</p>
+            <p>Наличные счета: {mainPageData.current_user_cash_invoices}</p>
+            <p>Регулярные траты: {mainPageData.current_user_regular_spends}</p>
         </div>
     )
 }

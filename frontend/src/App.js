@@ -9,9 +9,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import PrivateRoute from './utils/PrivateRoute'
 import LoginPage from './components/personal/LoginPage'
 import RegistrationPage from './components/personal/RegistrationPage'
-import BankAccountsPage from './components/bank-account/BankAccountsPage'
-import GetCacheInvoices from './components/cache-invoice/CacheInvoicesPage'
-import OperationsPage from './components/operation/OperationsPage'
+import BankAccountPage from './components/bank-account/BankAccountPage'
+import Operations from './components/operation/Operations'
 import PersonalPage from './components/personal/PersonalPage'
 import FinancialGoalsPage from './components/financial-goal/FinancialGoalsPage'
 import RegularSpendsPage from './components/regular-spending/RegularSpendsPage'
@@ -104,9 +103,9 @@ const App = () => {
                <Routes>
                   <Route element={<PrivateRoute><HomePage /></PrivateRoute>} path="/" exact />
                   <Route element={<PrivateRoute><PersonalPage /></PrivateRoute>} path="/personal" exact />
-                  <Route element={<PrivateRoute><BankAccountsPage /></PrivateRoute>} path="/bank-accounts" exact />
+                  <Route element={<PrivateRoute><BankAccountPage /></PrivateRoute>} path="/bank-accounts" exact />
                   <Route element={<PrivateRoute><CacheInvoice /></PrivateRoute>} path="/cache-invoices" exact />
-                  <Route element={<PrivateRoute><OperationsPage /></PrivateRoute>} path="/operations" exact />
+                  <Route element={<PrivateRoute><Operations /></PrivateRoute>} path="/operations" exact />
                   <Route element={<PrivateRoute><FinancialGoalsPage /></PrivateRoute>} path="/financial-goals" exact />
                   <Route element={<PrivateRoute><RegularSpendsPage /></PrivateRoute>} path="/regular-spends" exact />
                   <Route element={<LoginPage />} path="/login" />

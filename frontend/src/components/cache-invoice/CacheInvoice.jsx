@@ -15,13 +15,11 @@ const API_URL = "http://localhost:8000/api/cash-invoice/";
 
 
 
-///tableData и setTableData - то, что должно работать с данными с сервера
 const CacheInvoice = () => {
     let {authTokens, logoutUser} = useContext(AuthContext)
    const [isModal, setIsModal] = useState(false);
 
-   const [tableData, setTableData] = useState([
-   ]);
+   const [tableData, setTableData] = useState([]);
 
    const [formProps, setFormProps] = useState(null);
 
@@ -31,22 +29,21 @@ const CacheInvoice = () => {
             method: "GET",
             headers: {
                "Content-Type": "application/json",
-               'Authorization': "Bearer " + String(authTokens.access),
+                Authorization: "Bearer " + String(authTokens.access),
             },
          });
          //здесь получаем данные с сервера и преобразовываем в нормальный вид, записываем в стейт, чтобы оно обновилось
          let data = await response.json().then((data) => {
             data.forEach((el) => {
-               setTableData({
-                  ...el.user,
-                  ...el,
-               });
+               setTableData([
+                  ...tableData,
+                  { id: el.id, currency: el.currency, amount: el.amount },
+               ]);
             });
          });
          console.log(data);
       }
 
-      //Раскоментишь, когда будешь готов с сервера получать данные
       getData();
    }, []);
 
@@ -67,10 +64,23 @@ const CacheInvoice = () => {
       setIsModal(false);
    };
 
-   //При отправке формы в массив с tableData добавляем еще 1 объект
+   async function handleDelete(record) {
+      let response = await fetch(`${API_URL}/${record.id}`, {
+         method: "DELETE",
+         headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + String(authTokens.access),
+         },
+      });
+      setTableData(
+         tableData.filter((el) => {
+            return el.id !== record.id;
+         })
+      );
+   }
+
    function handleSubmit(values, props) {
       console.log(values);
-      //при edite
       if (props !== null) {
          setTableData((tableData) =>
             tableData.filter((el) => {
@@ -78,27 +88,13 @@ const CacheInvoice = () => {
             })
          );
       }
-      setTableData((tableData) => [...tableData, values]);
+      setTableData((tableData) => [...tableData, {...values, id:crypto.randomUUID()}]);
       setIsModal(false);
    }
 
    return (
       <div>
          <Table dataSource={tableData} key={crypto.randomUUID()}>
-            <ColumnGroup title="Pol'zovatel">
-               <Column title="Username" dataIndex="username" key="username" />
-               <Column
-                  title="First Name"
-                  dataIndex="first_name"
-                  key="first_name"
-               />
-               <Column
-                  title="Last Name"
-                  dataIndex="last_name"
-                  key="last_name"
-               />
-               <Column title="Email" dataIndex="email" key="email" />
-            </ColumnGroup>
             <ColumnGroup title="Cash">
                <Column title="Валюта" dataIndex="currency" key="currency" />
                <Column title="amount" dataIndex="amount" key="amount" />
@@ -108,10 +104,13 @@ const CacheInvoice = () => {
                key="action"
                render={(_, record) => (
                   <Space size="middle">
-                     <Button onClick={() => handleEdit(record)}>
-                        Edit {record.first_name}
-                     </Button>
-                     <AiOutlineDelete size={25}> </AiOutlineDelete>
+                     <Button onClick={() => handleEdit(record)}>Edit</Button>
+                     <AiOutlineDelete
+                        size={25}
+                        onClick={() => handleDelete(record)}
+                     >
+                        {" "}
+                     </AiOutlineDelete>
                   </Space>
                )}
             />
@@ -138,13 +137,12 @@ const CacheForm = ({ onSubmit, props }) => {
    async function onFinish(values) {
       console.log("Success:", values);
 
-      //раскоментишь, когда пост наладишь с сервером. пока добавляется просто элемент из формы
 
       let response = await fetch(`${API_URL}`, {
          method: "POST",
          headers: {
             "Content-Type": "application/json",
-            'Authorization': "Bearer " + String(authTokens.access),
+             Authorization: "Bearer " + String(authTokens.access),
          },
          body: JSON.stringify({
             amount: values.amount,
@@ -171,41 +169,8 @@ const CacheForm = ({ onSubmit, props }) => {
          autoComplete="off"
       >
          <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
-         >
-            <Input />
-         </Form.Item>
-
-         <Form.Item
-            label="first_name"
-            name="first_name"
-            rules={[{ required: true, message: "Please input your password!" }]}
-         >
-            <Input />
-         </Form.Item>
-
-         <Form.Item
-            label="last_name"
-            name="last_name"
-            rules={[{ required: true, message: "Please input your password!" }]}
-         >
-            <Input />
-         </Form.Item>
-
-         <Form.Item
-            label="email"
-            name="email"
-            //   rules={[{ required: true, message: "Please input your username!" }]}
-         >
-            <Input />
-         </Form.Item>
-
-         <Form.Item
             label="currency"
             name="currency"
-            //   rules={[{ required: true, message: "Please input your username!" }]}
          >
             <Select
                // defaultValue={"RUB"}
@@ -250,7 +215,13 @@ const CacheForm = ({ onSubmit, props }) => {
             label="amount"
             type="number"
             name="amount"
-            rules={[{ required: true, message: "Please input your username!" }]}
+            rules={[
+               {
+                  type: Number,
+                  required: true,
+                  message: "Please input your username!",
+               },
+            ]}
          >
             <Input />
          </Form.Item>
@@ -264,4 +235,4 @@ const CacheForm = ({ onSubmit, props }) => {
    );
 };
 
-export default CashInvoice;
+export default CacheInvoice;
